@@ -121,7 +121,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
             var positionTooltip = function () {
 
-              var ttPosition = $position.positionElements(element, tooltip, scope.tt_placement, appendToBody);
+              var ttPosition = $position.positionElements(element, tooltip, scope.tt_placement || 'top', appendToBody);
               ttPosition.top += 'px';
               ttPosition.left += 'px';
 
@@ -260,6 +260,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               scope.tt_title = val;
             });
 
+            scope.tt_placement='top';
             attrs.$observe( prefix+'Placement', function ( val ) {
               scope.tt_placement = angular.isDefined( val ) ? val : options.placement;
             });
