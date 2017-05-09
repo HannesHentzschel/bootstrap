@@ -2634,7 +2634,7 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
               element.unbind(triggers.hide, hideTooltipBind);
             };
 
-            attrs.$observe( prefix+'Trigger', function ( val ) {
+            function setTriggers ( val ) {
               unregisterTriggers();
 
               triggers = getTriggers( val );
@@ -2645,7 +2645,10 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
                 element.bind( triggers.show, showTooltipBind );
                 element.bind( triggers.hide, hideTooltipBind );
               }
-            });
+            }
+
+            attrs.$observe( prefix+'Trigger', setTriggers);
+            setTriggers();
 
             var animation = scope.$eval(attrs[prefix + 'Animation']);
             scope.tt_animation = angular.isDefined(animation) ? !!animation : options.animation;
