@@ -2,7 +2,7 @@
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 0.11.0 - 2017-05-09
+ * Version: 0.11.0 - 2017-05-24
  * License: MIT
  */
 angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.transition","ui.bootstrap.collapse","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.bindHtml","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.position","ui.bootstrap.datepicker","ui.bootstrap.dropdown","ui.bootstrap.modal","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
@@ -2003,6 +2003,13 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       };
 
       $modalStack.close = function (modalInstance, result) {
+        var e=modalInstance.trigger('beforeClose',{
+          type: 'close',
+          result: result
+        });
+        if(e.defaultPrevented) {
+          return;
+        }
         var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
           modalWindow.deferred.resolve(result);
@@ -2011,6 +2018,13 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       };
 
       $modalStack.dismiss = function (modalInstance, reason) {
+        var e=modalInstance.trigger('beforeClose',{
+          type: 'dismiss',
+          reason: reason
+        });
+        if(e.defaultPrevented) {
+          return;
+        }
         var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
           modalWindow.deferred.reject(reason);
@@ -2067,6 +2081,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
             var modalResultDeferred = $q.defer();
             var modalOpenedDeferred = $q.defer();
 
+            var eventHandlers = {};
             //prepare an instance of a modal to be injected into controllers and returned to a caller
             var modalInstance = {
               result: modalResultDeferred.promise,
@@ -2076,6 +2091,47 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
               },
               dismiss: function (reason) {
                 $modalStack.dismiss(modalInstance, reason);
+              },
+              on: function(events,callback){
+                events.split(',').forEach(function(eventName){
+                  if(!eventHandlers[eventName]){
+                    eventHandlers[eventName]=[];
+                  }
+                  eventHandlers[eventName].push(callback);
+                });
+              },
+              trigger: function(eventName,data){
+                var event={
+                  type: eventName,
+                  defaultPrevented: false,
+                  preventDefault: function(){
+                    event.defaultPrevented=true;
+                  }
+                };
+                if(eventHandlers[eventName]){
+                  eventHandlers[eventName].forEach(function(callback){
+                    callback(event,data);
+                  });
+                }
+                return event;
+              },
+              off: function(events,callback){
+                if(!events && !callback){
+                  eventHandlers={};
+                }
+                else {
+                  events.split(',').forEach(function(eventName){
+                    if(!callback){
+                      eventHandlers[eventName]=[];
+                    }
+                    else {
+                      var i;
+                      while((i=eventHandlers[eventName].indexOf(callback))>=0){
+                        eventHandlers[eventName].splice(i);
+                      }
+                    }
+                  });
+                }
               }
             };
 
@@ -3986,13 +4042,6 @@ angular.module("template/pagination/pagination.html", []).run(["$templateCache",
     "</ul>");
 }]);
 
-angular.module("uib/template/tooltip/tooltip-html-popup.html", []).run(["$templateCache", function ($templateCache) {
-  $templateCache.put("uib/template/tooltip/tooltip-html-popup.html",
-    "<div class=\"tooltip-arrow\"></div>\n" +
-    "<div class=\"tooltip-inner\" ng-bind-html=\"contentExp()\"></div>\n" +
-    "");
-}]);
-
 angular.module("template/tooltip/tooltip-html-unsafe-popup.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("template/tooltip/tooltip-html-unsafe-popup.html",
     "<div class=\"tooltip {{placement}}\" ng-class=\"{ in: isOpen(), fade: animation() }\">\n" +
@@ -4007,39 +4056,6 @@ angular.module("template/tooltip/tooltip-popup.html", []).run(["$templateCache",
     "<div class=\"tooltip {{placement}}\" ng-class=\"{ in: isOpen(), fade: animation() }\">\n" +
     "  <div class=\"tooltip-arrow\"></div>\n" +
     "  <div class=\"tooltip-inner\" ng-bind=\"content\"></div>\n" +
-    "</div>\n" +
-    "");
-}]);
-
-angular.module("uib/template/tooltip/tooltip-template-popup.html", []).run(["$templateCache", function ($templateCache) {
-  $templateCache.put("uib/template/tooltip/tooltip-template-popup.html",
-    "<div class=\"tooltip-arrow\"></div>\n" +
-    "<div class=\"tooltip-inner\"\n" +
-    "  uib-tooltip-template-transclude=\"contentExp()\"\n" +
-    "  tooltip-template-transclude-scope=\"originScope()\"></div>\n" +
-    "");
-}]);
-
-angular.module("uib/template/popover/popover-html.html", []).run(["$templateCache", function ($templateCache) {
-  $templateCache.put("uib/template/popover/popover-html.html",
-    "<div class=\"arrow\"></div>\n" +
-    "\n" +
-    "<div class=\"popover-inner\">\n" +
-    "    <h3 class=\"popover-title\" ng-bind=\"uibTitle\" ng-if=\"uibTitle\"></h3>\n" +
-    "    <div class=\"popover-content\" ng-bind-html=\"contentExp()\"></div>\n" +
-    "</div>\n" +
-    "");
-}]);
-
-angular.module("uib/template/popover/popover-template.html", []).run(["$templateCache", function ($templateCache) {
-  $templateCache.put("uib/template/popover/popover-template.html",
-    "<div class=\"arrow\"></div>\n" +
-    "\n" +
-    "<div class=\"popover-inner\">\n" +
-    "    <h3 class=\"popover-title\" ng-bind=\"uibTitle\" ng-if=\"uibTitle\"></h3>\n" +
-    "    <div class=\"popover-content\"\n" +
-    "      uib-tooltip-template-transclude=\"contentExp()\"\n" +
-    "      tooltip-template-transclude-scope=\"originScope()\"></div>\n" +
     "</div>\n" +
     "");
 }]);
