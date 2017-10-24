@@ -2003,6 +2003,13 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       };
 
       $modalStack.close = function (modalInstance, result) {
+        var e=modalInstance.trigger('beforeClose',{
+          type: 'close',
+          result: result
+        });
+        if(e.defaultPrevented) {
+          return;
+        }
         var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
           modalWindow.deferred.resolve(result);
@@ -2011,6 +2018,13 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
       };
 
       $modalStack.dismiss = function (modalInstance, reason) {
+        var e=modalInstance.trigger('beforeClose',{
+          type: 'dismiss',
+          reason: reason
+        });
+        if(e.defaultPrevented) {
+          return;
+        }
         var modalWindow = openedWindows.get(modalInstance).value;
         if (modalWindow) {
           modalWindow.deferred.reject(reason);
@@ -2067,6 +2081,7 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
             var modalResultDeferred = $q.defer();
             var modalOpenedDeferred = $q.defer();
 
+            var eventHandlers = {};
             //prepare an instance of a modal to be injected into controllers and returned to a caller
             var modalInstance = {
               result: modalResultDeferred.promise,
@@ -2076,6 +2091,47 @@ angular.module('ui.bootstrap.modal', ['ui.bootstrap.transition'])
               },
               dismiss: function (reason) {
                 $modalStack.dismiss(modalInstance, reason);
+              },
+              on: function(events,callback){
+                events.split(',').forEach(function(eventName){
+                  if(!eventHandlers[eventName]){
+                    eventHandlers[eventName]=[];
+                  }
+                  eventHandlers[eventName].push(callback);
+                });
+              },
+              trigger: function(eventName,data){
+                var event={
+                  type: eventName,
+                  defaultPrevented: false,
+                  preventDefault: function(){
+                    event.defaultPrevented=true;
+                  }
+                };
+                if(eventHandlers[eventName]){
+                  eventHandlers[eventName].forEach(function(callback){
+                    callback(event,data);
+                  });
+                }
+                return event;
+              },
+              off: function(events,callback){
+                if(!events && !callback){
+                  eventHandlers={};
+                }
+                else {
+                  events.split(',').forEach(function(eventName){
+                    if(!callback){
+                      eventHandlers[eventName]=[];
+                    }
+                    else {
+                      var i;
+                      while((i=eventHandlers[eventName].indexOf(callback))>=0){
+                        eventHandlers[eventName].splice(i);
+                      }
+                    }
+                  });
+                }
               }
             };
 
