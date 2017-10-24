@@ -525,12 +525,12 @@ function ($compile, $parse, $document, $position, dateFilter, dateParser, datepi
           element[0].focus();
         }
       };
-
-      element.bind('input change keyup', function() {
+      function typing() {
         scope.$apply(function() {
           scope.date = ngModel.$modelValue;
         });
-      });
+      }
+      element.bind('input change keyup', typing);
 
       // Outter change
       ngModel.$render = function() {
@@ -602,6 +602,7 @@ function ($compile, $parse, $document, $position, dateFilter, dateParser, datepi
       scope.$on('$destroy', function() {
         $popup.remove();
         element.unbind('keydown', keydown);
+        element.unbind('input change keyup', typing);
         $document.unbind('click', documentClickBind);
       });
     }

@@ -2,7 +2,7 @@
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 0.11.0 - 2017-05-09
+ * Version: 0.11.0 - 2017-10-24
  * License: MIT
  */
 angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.transition","ui.bootstrap.collapse","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.bindHtml","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.position","ui.bootstrap.datepicker","ui.bootstrap.dropdown","ui.bootstrap.modal","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
@@ -1503,12 +1503,12 @@ function ($compile, $parse, $document, $position, dateFilter, dateParser, datepi
           element[0].focus();
         }
       };
-
-      element.bind('input change keyup', function() {
+      function typing() {
         scope.$apply(function() {
           scope.date = ngModel.$modelValue;
         });
-      });
+      }
+      element.bind('input change keyup', typing);
 
       // Outter change
       ngModel.$render = function() {
@@ -1580,6 +1580,7 @@ function ($compile, $parse, $document, $position, dateFilter, dateParser, datepi
       scope.$on('$destroy', function() {
         $popup.remove();
         element.unbind('keydown', keydown);
+        element.unbind('input change keyup', typing);
         $document.unbind('click', documentClickBind);
       });
     }
