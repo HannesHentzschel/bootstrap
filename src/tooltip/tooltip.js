@@ -121,7 +121,13 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
             var positionTooltip = function () {
 
-              var ttPosition = $position.positionElements(element, tooltip, scope.tt_placement || 'top', appendToBody);
+              var ttSpace = element[0].getClientRects()[0];
+              var ttHeight = tooltip[0].offsetHeight;
+              var pos =  scope.tt_placement || 'top';
+              if(pos == 'top' && ttSpace && ttSpace.top < ttHeight) {
+                scope.tt_placement = pos = 'bottom';
+              }
+              var ttPosition = $position.positionElements(element, tooltip, pos, appendToBody);
               ttPosition.top += 'px';
               ttPosition.left += 'px';
 

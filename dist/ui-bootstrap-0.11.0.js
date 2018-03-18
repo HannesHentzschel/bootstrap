@@ -2,7 +2,7 @@
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 0.11.0 - 2017-10-24
+ * Version: 0.11.0 - 2018-03-18
  * License: MIT
  */
 angular.module("ui.bootstrap", ["ui.bootstrap.transition","ui.bootstrap.collapse","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.bindHtml","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.position","ui.bootstrap.datepicker","ui.bootstrap.dropdown","ui.bootstrap.modal","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
@@ -2537,7 +2537,13 @@ angular.module( 'ui.bootstrap.tooltip', [ 'ui.bootstrap.position', 'ui.bootstrap
 
             var positionTooltip = function () {
 
-              var ttPosition = $position.positionElements(element, tooltip, scope.tt_placement || 'top', appendToBody);
+              var ttSpace = element[0].getClientRects()[0];
+              var ttHeight = tooltip[0].offsetHeight;
+              var pos =  scope.tt_placement || 'top';
+              if(pos == 'top' && ttSpace && ttSpace.top < ttHeight) {
+                scope.tt_placement = pos = 'bottom';
+              }
+              var ttPosition = $position.positionElements(element, tooltip, pos, appendToBody);
               ttPosition.top += 'px';
               ttPosition.left += 'px';
 
