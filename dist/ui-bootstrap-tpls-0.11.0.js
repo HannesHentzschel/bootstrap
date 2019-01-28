@@ -2,7 +2,7 @@
  * angular-ui-bootstrap
  * http://angular-ui.github.io/bootstrap/
 
- * Version: 0.11.0 - 2018-03-18
+ * Version: 0.11.0 - 2019-01-28
  * License: MIT
  */
 angular.module("ui.bootstrap", ["ui.bootstrap.tpls", "ui.bootstrap.transition","ui.bootstrap.collapse","ui.bootstrap.accordion","ui.bootstrap.alert","ui.bootstrap.bindHtml","ui.bootstrap.buttons","ui.bootstrap.carousel","ui.bootstrap.dateparser","ui.bootstrap.position","ui.bootstrap.datepicker","ui.bootstrap.dropdown","ui.bootstrap.modal","ui.bootstrap.pagination","ui.bootstrap.tooltip","ui.bootstrap.popover","ui.bootstrap.progressbar","ui.bootstrap.rating","ui.bootstrap.tabs","ui.bootstrap.timepicker","ui.bootstrap.typeahead"]);
@@ -704,8 +704,8 @@ angular.module('ui.bootstrap.dateparser', [])
 
   var formatCodeToRegex = {
     'yyyy': {
-      regex: '\\d{4}',
-      apply: function(value) { this.year = +value; }
+      regex: '\\d{1,4}',
+      apply: function(value) { if(value.length==2) { value=(value*1)+2000; } this.year = +value; }
     },
     'yy': {
       regex: '\\d{2}',
@@ -724,7 +724,7 @@ angular.module('ui.bootstrap.dateparser', [])
       apply: function(value) { this.month = $locale.DATETIME_FORMATS.SHORTMONTH.indexOf(value); }
     },
     'MM': {
-      regex: '0[1-9]|1[0-2]',
+      regex: '0?[1-9]|1[0-2]',
       apply: function(value) { this.month = value - 1; }
     },
     'M': {
@@ -732,7 +732,7 @@ angular.module('ui.bootstrap.dateparser', [])
       apply: function(value) { this.month = value - 1; }
     },
     'dd': {
-      regex: '[0-2][0-9]{1}|3[0-1]{1}',
+      regex: '0?[1-9]{1}|1[0-9]{1}|2[0-9]{1}|3[0-1]{1}',
       apply: function(value) { this.date = +value; }
     },
     'd': {

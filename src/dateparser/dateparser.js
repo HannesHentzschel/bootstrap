@@ -6,8 +6,8 @@ angular.module('ui.bootstrap.dateparser', [])
 
   var formatCodeToRegex = {
     'yyyy': {
-      regex: '\\d{4}',
-      apply: function(value) { this.year = +value; }
+      regex: '\\d{1,4}',
+      apply: function(value) { if(value.length==2) { value=(value*1)+2000; } this.year = +value; }
     },
     'yy': {
       regex: '\\d{2}',
@@ -26,7 +26,7 @@ angular.module('ui.bootstrap.dateparser', [])
       apply: function(value) { this.month = $locale.DATETIME_FORMATS.SHORTMONTH.indexOf(value); }
     },
     'MM': {
-      regex: '0[1-9]|1[0-2]',
+      regex: '0?[1-9]|1[0-2]',
       apply: function(value) { this.month = value - 1; }
     },
     'M': {
@@ -34,7 +34,7 @@ angular.module('ui.bootstrap.dateparser', [])
       apply: function(value) { this.month = value - 1; }
     },
     'dd': {
-      regex: '[0-2][0-9]{1}|3[0-1]{1}',
+      regex: '0?[1-9]{1}|1[0-9]{1}|2[0-9]{1}|3[0-1]{1}',
       apply: function(value) { this.date = +value; }
     },
     'd': {
